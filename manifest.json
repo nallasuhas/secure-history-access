@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "History Access Security",
+    "version": "1.0",
+    "permissions": ["storage", "tabs", "history"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "chrome_url_overrides": {
+      "history": "history.html"
+    },
+    "host_permissions": ["*://*/*"],
+    "action": {
+      "default_title": "History Access Security"
+    }
+  }
+  

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure History</title>
+  <link rel="stylesheet" href="modal.css">
+</head>
+<body>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2>Enter PIN to Access History</h2>
+      <input type="password" id="pin" placeholder="Enter your PIN" />
+      <button id="submitPin">Submit</button>
+      <p id="error" style="color: red; display: none;">Incorrect PIN. Try again.</p>
+      <button id="setPin">Set New PIN</button>
+    </div>
+  </div>
+  <div id="history-content" style="display: none;">
+    <h1>History</h1>
+    <p>Your browsing history will appear here.</p>
+    <!-- Add logic to fetch and display browsing history if needed -->
+  </div>
+  <script src="modal.js"></script>
+</body>
+</html>
