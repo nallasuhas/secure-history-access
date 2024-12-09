@@ -17,6 +17,35 @@ async function hashPIN(pin) {
       });
     });
   }
+
+  async function setMasterPassword() {
+    const masterPassword = prompt("Set a master password for security:");
+  
+    if (masterPassword) {
+      const hashedPassword = await hashPIN(masterPassword);
+  
+      // Save the hashed master password
+      chrome.storage.local.set({ masterPasswordHash: hashedPassword }, () => {
+        alert("Master password has been set.");
+        // You could redirect to another page or perform other actions here
+      });
+    }
+  }
+
+  async function authenticateMasterPassword(callback) {
+    const enteredPassword = prompt("Enter your master password:");
+  
+    const hashedEnteredPassword = await hashPIN(enteredPassword);
+  
+    // Retrieve stored hashed master password
+    chrome.storage.local.get("masterPasswordHash", (data) => {
+      if (data.masterPasswordHash === hashedEnteredPassword) {
+        callback(); // Proceed with PIN setting
+      } else {
+        alert("Incorrect master password.");
+      }
+    });
+  }
   
   document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("modal");
@@ -25,6 +54,18 @@ async function hashPIN(pin) {
     const setPinBtn = document.getElementById("setPin");
     const pinInput = document.getElementById("pin");
     const errorMsg = document.getElementById("error");
+
+    chrome.storage.local.get("masterPasswordHash", (data) => {
+        if (!data.masterPasswordHash) {
+          // No master password is set, so prompt the user to set it
+          setMasterPassword();
+        } else {
+          // Master password is already set, allow normal operations
+          console.log("Master password already set");
+        }
+      });
+
+      
   
     async function validatePIN() {
       const enteredPin = pinInput.value;
@@ -41,16 +82,23 @@ async function hashPIN(pin) {
         }
       });
     }
+    
   
     async function setNewPIN() {
-      const newPin = prompt("Enter a new PIN:");
-      if (newPin) {
-        const hashedPin = await hashPIN(newPin);
-        chrome.storage.local.set({ hashedPIN: hashedPin }, () => {
-          alert("PIN has been set successfully!");
+        // Authenticate before allowing PIN setup
+        authenticateMasterPassword(async () => {
+          const pin = prompt("Enter your new PIN:");
+      
+          if (pin) {
+            const hashedPin = await hashPIN(pin);
+      
+            // Store the hashed PIN
+            chrome.storage.local.set({ hashedPIN: hashedPin }, () => {
+              alert("Your PIN has been set.");
+            });
+          }
         });
       }
-    }
   
     submitPinBtn.addEventListener("click", validatePIN);
     setPinBtn.addEventListener("click", setNewPIN);
